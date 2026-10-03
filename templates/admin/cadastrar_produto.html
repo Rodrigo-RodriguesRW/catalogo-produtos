@@ -1,131 +1,234 @@
+
 {% extends 'admin/base.html' %}
 
 {% block content %}
 
-<h3 style="background-color: rgb(198, 197, 197);">
-    Cadastrar Produto
-</h3>
+<div class="d-flex flex-column flex-md-row
+            align-items-md-center justify-content-between
+            gap-3 mb-4">
 
-<div class="container">
+    <div>
 
+        <h1 class="mb-1">
+            Cadastrar Produto
+        </h1>
 
-<form method="POST" enctype="multipart/form-data">
+        <p class="text-body-secondary mb-0">
+            Adicione um novo produto ao catálogo.
+        </p>
 
-    <div class="form-group mb-3">
-        <label for="nome">
-            Nome do Produto:
-        </label>
-
-        <input
-            type="text"
-            class="form-control"
-            id="nome"
-            name="nome"
-            required>
     </div>
 
-
-    <div class="form-group mb-3">
-        <label for="preco">
-            Preço:
-        </label>
-
-        <input
-            type="number"
-            step="0.01"
-            class="form-control"
-            id="preco"
-            name="preco"
-            placeholder="Ex: 25.90"
-            required>
-    </div>
+</div>
 
 
-    <div class="form-group mb-3">
-        <label for="id_categoria">
-            Categoria:
-        </label>
+<div class="card shadow-sm">
 
-        <select
-            class="form-select"
-            id="id_categoria"
-            name="id_categoria"
-            required>
+    <div class="card-header">
 
-            <option value="">
-                Selecione uma categoria
-            </option>
+        <h3 class="card-title mb-0">
 
-            {% for categoria in categorias %}
+            <i class="bi bi-box-seam me-2"></i>
 
-            <option value="{{ categoria.id }}">
-                {{ categoria.nome }}
-            </option>
+            Novo produto
 
-            {% endfor %}
-
-        </select>
-    </div>
-
-
-    <div class="form-group mb-3">
-        <label for="ativo" class="form-label">
-            Status
-        </label>
-
-        <select
-            class="form-select"
-            id="ativo"
-            name="ativo">
-
-            <option value="True">
-                Ativo
-            </option>
-
-            <option value="False">
-                Inativo
-            </option>
-
-        </select>
-    </div>
-
-
-    <div class="form-group mb-3">
-        <label for="imagem">
-            Imagem:
-        </label>
-
-        <input
-            type="file"
-            class="form-control"
-            id="imagem"
-            name="imagem"
-            accept="image/*">
+        </h3>
 
     </div>
 
 
-    <br>
+    <div class="card-body">
 
-    <button
-        type="submit"
-        class="btn btn-primary mb-2">
+        <form
+            method="POST"
+            enctype="multipart/form-data">
 
-        Cadastrar
+            <div class="row g-3">
 
-    </button>
+                <!-- Nome -->
 
-    <a
-        href="{{ url_for('listarProdutos') }}"
-        class="btn btn-secondary mb-2">
+                <div class="col-12">
 
-        Cancelar
+                    <label
+                        for="nome"
+                        class="form-label">
 
-    </a>
+                        Nome do Produto
 
-</form>
+                    </label>
 
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="nome"
+                        name="nome"
+                        placeholder="Digite o nome do produto"
+                        required>
+
+                </div>
+
+
+                <!-- Preço -->
+
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="preco"
+                        class="form-label">
+
+                        Preço
+
+                    </label>
+
+                    <div class="input-group">
+
+                        <span class="input-group-text">
+                            R$
+                        </span>
+
+                        <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="form-control"
+                            id="preco"
+                            name="preco"
+                            placeholder="25.90"
+                            required>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Categoria -->
+
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="id_categoria"
+                        class="form-label">
+
+                        Categoria
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="id_categoria"
+                        name="id_categoria"
+                        required>
+
+                        <option value="">
+                            Selecione uma categoria
+                        </option>
+
+                        {% for categoria in categorias %}
+
+                            <option value="{{ categoria.id }}">
+                                {{ categoria.nome }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="ativo"
+                        class="form-label">
+
+                        Status
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        id="ativo"
+                        name="ativo">
+
+                        <option value="True">
+                            Ativo
+                        </option>
+
+                        <option value="False">
+                            Inativo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Imagem -->
+
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="imagem"
+                        class="form-label">
+
+                        Imagem
+
+                    </label>
+
+                    <input
+                        type="file"
+                        class="form-control"
+                        id="imagem"
+                        name="imagem"
+                        accept="image/*">
+
+                    <div class="form-text">
+                        Selecione uma imagem para representar o produto.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Botões -->
+
+            <div class="d-flex flex-column flex-sm-row
+                        justify-content-end
+                        gap-2
+                        mt-4">
+
+                <a
+                    href="{{ url_for('listarProdutos') }}"
+                    class="btn btn-secondary">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+
+                    Cancelar
+
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    <i class="bi bi-check-circle me-1"></i>
+
+                    Cadastrar
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
 {% endblock %}
+

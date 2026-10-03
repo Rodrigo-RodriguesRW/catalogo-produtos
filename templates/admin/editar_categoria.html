@@ -1,123 +1,243 @@
+
 {% extends 'admin/base.html' %}
 
 {% block content %}
 
-<h3 style="background-color: rgb(198, 197, 197);">
-    Editar Categoria
-</h3>
+<div class="d-flex flex-column flex-md-row
+            align-items-md-center justify-content-between
+            gap-3 mb-4">
 
-<div class="container">
+    <div>
 
-    <form method="POST" enctype="multipart/form-data">
+        <h1 class="mb-1">
+            Editar Categoria
+        </h1>
 
-        <div class="form-group">
-            <label for="nome_categoria">
-                Nome da Categoria:
-            </label>
+        <p class="text-body-secondary mb-0">
+            Altere as informações da categoria cadastrada.
+        </p>
 
-            <input
-                type="text"
-                class="form-control"
-                id="nome_categoria"
-                value="{{ categoria.nome }}"
-                name="nome_categoria"
-                required>
-        </div>
+    </div>
+
+</div>
 
 
-        <div class="form-group">
-            <label for="descricao">
-                Descrição:
-            </label>
+<div class="card shadow-sm">
 
-            <input
-                type="text"
-                class="form-control"
-                value="{{ categoria.descricao }}"
-                id="descricao"
-                name="descricao"
-                required>
-        </div>
+    <div class="card-header">
 
+        <h3 class="card-title mb-0">
 
-        <div class="form-group">
-            <label for="ativo" class="form-label">
-                Status
-            </label>
+            <i class="bi bi-pencil-square me-2"></i>
 
-            <select
-                class="form-select"
-                name="ativo"
-                id="ativo">
+            Editar categoria
 
-                <option
-                    value="True"
-                    {% if categoria.ativo == 'True' %}selected{% endif %}>
-                    Ativo
-                </option>
+        </h3>
 
-                <option
-                    value="False"
-                    {% if categoria.ativo == 'False' %}selected{% endif %}>
-                    Inativo
-                </option>
-
-            </select>
-        </div>
+    </div>
 
 
-        <div class="form-group">
-            <label for="imagem_atual">
-                Imagem Atual:
-            </label>
+    <div class="card-body">
 
-            {% if categoria.imagem %}
+        <form
+            method="POST"
+            enctype="multipart/form-data">
 
-            <br>
+            <div class="row g-3">
 
-            <img
-                src="data:image/jpeg;base64,{{ categoria.imagem }}"
-                alt="Imagem Atual"
-                style="width: 200px;">
+                <!-- Nome -->
 
-            {% else %}
+                <div class="col-12">
 
-            <p class="text-muted">
-                Nenhuma imagem cadastrada.
-            </p>
+                    <label
+                        for="nome_categoria"
+                        class="form-label">
 
-            {% endif %}
+                        Nome da Categoria
 
-        </div>
+                    </label>
 
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="nome_categoria"
+                        name="nome_categoria"
+                        value="{{ categoria.nome }}"
+                        required>
 
-        <div class="form-group">
-            <label for="imagem">
-                Nova imagem:
-            </label>
-
-            <input
-                type="file"
-                class="form-control"
-                id="imagem"
-                name="imagem"
-                accept="image/*">
-
-        </div>
+                </div>
 
 
-        <br>
+                <!-- Descrição -->
 
-        <button
-            type="submit"
-            class="btn btn-primary mb-2">
+                <div class="col-12">
 
-            Salvar Alterações
+                    <label
+                        for="descricao"
+                        class="form-label">
 
-        </button>
+                        Descrição
 
-    </form>
+                    </label>
+
+                    <textarea
+                        class="form-control"
+                        id="descricao"
+                        name="descricao"
+                        rows="4"
+                        required>{{ categoria.descricao }}</textarea>
+
+                </div>
+
+
+                <!-- Status -->
+
+                <div class="col-12 col-md-6">
+
+                    <label
+                        for="ativo"
+                        class="form-label">
+
+                        Status
+
+                    </label>
+
+                    <select
+                        class="form-select"
+                        name="ativo"
+                        id="ativo">
+
+                        <option
+                            value="True"
+                            {% if categoria.ativo == 'True' or categoria.ativo == 1 %}
+                                selected
+                            {% endif %}>
+
+                            Ativo
+
+                        </option>
+
+                        <option
+                            value="False"
+                            {% if categoria.ativo == 'False' or categoria.ativo == 0 %}
+                                selected
+                            {% endif %}>
+
+                            Inativo
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Imagem atual -->
+
+                <div class="col-12">
+
+                    <label class="form-label">
+                        Imagem Atual
+                    </label>
+
+                    {% if categoria.imagem %}
+
+                        <div class="mt-2">
+
+                            <img
+                                src="data:image/jpeg;base64,{{ categoria.imagem }}"
+                                class="img-thumbnail"
+                                style="width: 200px; height: 200px; object-fit: cover;"
+                                alt="Imagem atual da categoria {{ categoria.nome }}">
+
+                        </div>
+
+                    {% else %}
+
+                        <div
+                            class="border rounded p-4 text-center
+                                   text-body-secondary">
+
+                            <i
+                                class="bi bi-image"
+                                style="font-size: 2.5rem;">
+                            </i>
+
+                            <p class="mb-0 mt-2">
+                                Nenhuma imagem cadastrada.
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <!-- Nova imagem -->
+
+                <div class="col-12">
+
+                    <label
+                        for="imagem"
+                        class="form-label">
+
+                        Nova imagem
+
+                    </label>
+
+                    <input
+                        type="file"
+                        class="form-control"
+                        id="imagem"
+                        name="imagem"
+                        accept="image/*">
+
+                    <div class="form-text">
+                        Selecione uma nova imagem somente se quiser
+                        substituir a imagem atual.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Botões -->
+
+            <div class="d-flex flex-column flex-sm-row
+                        justify-content-end
+                        gap-2
+                        mt-4">
+
+                <a
+                    href="{{ url_for('listarCategoria') }}"
+                    class="btn btn-secondary">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+
+                    Voltar
+
+                </a>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary">
+
+                    <i class="bi bi-check-circle me-1"></i>
+
+                    Salvar Alterações
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>
 
 {% endblock %}
+
