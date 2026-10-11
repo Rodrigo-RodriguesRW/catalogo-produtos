@@ -1,0 +1,48 @@
+
+{% extends 'admin/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h1 class="mb-2">Painel Administrativo</h1>
+
+    <p class="text-body-secondary">
+        Bem-vindo ao sistema de gestão do catálogo de produtos.
+    </p>
+
+    <div class="row g-3 mt-3">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Produtos</h5>
+                    <p>Cadastre e gerencie os produtos.</p>
+
+                    <a href="{{ url_for('listarProdutos') }}"
+                       class="btn btn-primary">
+                        Acessar produtos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5>Categorias</h5>
+                    <p>Cadastre e gerencie as categorias.</p>
+
+                    <a href="{{ url_for('listarCategoria') }}"
+                       class="btn btn-primary">
+                        Acessar categorias
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
