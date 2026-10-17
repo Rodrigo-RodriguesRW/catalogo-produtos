@@ -108,28 +108,16 @@ def index():
 # CATEGORIAS
 # =========================================================
 
-@app.route("/listar_categorias")
-@administrador_logado
-def listarCategoria():
-    conn = conexao()
-
-    categorias = conn.execute(
-        "SELECT * FROM categoria ORDER BY id"
-    ).fetchall()
-
-    conn.close()
-
-    return render_template(
-        "admin/listar_categoria.html",
-        categorias=categorias
-    )
+# =========================================================
+# CADASTRAR CATEGORIAS
+# =========================================================
 
 
 @app.route("/cadastrar_categorias", methods=["GET", "POST"])
 @administrador_logado
 def cadastrarCategoria():
     if request.method == "POST":
-        nome_categoria = request.form.get("nome_categoria", "").strip()
+        nome = request.form.get("nome_categoria", "").strip()
         descricao = request.form.get("descricao", "").strip()
         ativo = valor_ativo(request.form.get("ativo"))
 
@@ -141,201 +129,344 @@ def cadastrarCategoria():
                 imagem.read()
             ).decode("utf-8")
 
-        if nome_categoria:
-            conn = conexao()
-            conn.execute(
-                """
-                INSERT INTO categoria
-                    (nome, descricao, ativo, imagem)
-                VALUES (?, ?, ?, ?)
-                """,
-                (nome_categoria, descricao, ativo, imagem_base64)
+        if not nome or not descricao:
+            flash(
+                "Preencha o nome e a descrição da categoria.",
+                "warning"
             )
-            conn.commit()
-            conn.close()
+        else:
+            conn = conexao()
 
-            flash("Categoria cadastrada com sucesso!", "success")
-            return redirect(url_for("listarCategoria"))
+            try:
+                conn.execute(
+                    """
+                    INSERT INTO categoria
+                        (nome, descricao, ativo, imagem)
+                    VALUES (?, ?, ?, ?)
+                    """,
+                    (nome, descricao, ativo, imagem_base64)
+                )
 
-        flash("Informe o nome da categoria.", "warning")
+                conn.commit()
+
+                flash(
+                    "Categoria cadastrada com sucesso!",
+                    "success"
+                )
+
+                return redirect(url_for("listarCategoria"))
+
+            finally:
+                conn.close()
 
     return render_template("admin/cadastrar_categoria.html")
 
 
-@app.route("/editarcategoria/<int:id>", methods=["GET", "POST"])
+# =========================================================
+# LISTAGEM ADMINISTRATIVA DE CATEGORIAS
+# =========================================================
+
+@app.route("/listar_categorias")
+@administrador_logado
+def listarCategoria():
+    por_pagina = 10
+
+    try:
+        pagina = int(request.args.get("pagina", 1))
+    except (TypeError, ValueError):
+        pagina = 1
+
+    if pagina < 1:
+        pagina = 1
+
+    conn = conexao()
+
+    try:
+        total_categorias = conn.execute(
+            "SELECT COUNT(*) FROM categoria"
+        ).fetchone()[0]
+
+        total_paginas = max(
+            1,
+            (total_categorias + por_pagina - 1) // por_pagina
+        )
+
+        pagina = min(pagina, total_paginas)
+        offset = (pagina - 1) * por_pagina
+
+        categorias = conn.execute(
+            """
+            SELECT *
+            FROM categoria
+            ORDER BY id
+            LIMIT ? OFFSET ?
+            """,
+            (por_pagina, offset)
+        ).fetchall()
+
+    finally:
+        conn.close()
+
+    return render_template(
+        "admin/listar_categoria.html",
+        categorias=categorias,
+        pagina=pagina,
+        total_paginas=total_paginas,
+        total_categorias=total_categorias
+    )
+    
+
+# =========================================================
+# EDITAR CATEGORIA
+# =========================================================
+
+@app.route("/editar_categoria/<int:id>", methods=["GET", "POST"])
 @administrador_logado
 def editarCategoria(id):
     conn = conexao()
 
-    categoria = conn.execute(
-        "SELECT * FROM categoria WHERE id = ?",
-        (id,)
-    ).fetchone()
+    try:
+        categoria = conn.execute(
+            "SELECT * FROM categoria WHERE id = ?",
+            (id,)
+        ).fetchone()
 
-    if categoria is None:
-        conn.close()
-        flash("Categoria não encontrada.", "warning")
-        return redirect(url_for("listarCategoria"))
+        if categoria is None:
+            flash("Categoria não encontrada.", "warning")
+            return redirect(url_for("listarCategoria"))
 
-    if request.method == "POST":
-        nome_categoria = request.form.get("nome_categoria", "").strip()
-        descricao = request.form.get("descricao", "").strip()
-        ativo = valor_ativo(request.form.get("ativo"))
+        if request.method == "POST":
+            nome = request.form.get("nome_categoria", "").strip()
+            descricao = request.form.get("descricao", "").strip()
+            ativo = valor_ativo(request.form.get("ativo"))
+            imagem = request.files.get("imagem")
 
-        imagem = request.files.get("imagem")
+            if not nome or not descricao:
+                flash(
+                    "Preencha o nome e a descrição da categoria.",
+                    "warning"
+                )
+                return render_template(
+                    "admin/editar_categoria.html",
+                    categoria=categoria
+                )
 
-        if nome_categoria:
+            # Mantém a imagem atual se nenhuma nova for enviada.
+            imagem_base64 = categoria["imagem"]
+
             if imagem and imagem.filename:
                 imagem_base64 = base64.b64encode(
                     imagem.read()
                 ).decode("utf-8")
 
-                conn.execute(
-                    """
-                    UPDATE categoria
-                    SET nome = ?, descricao = ?, ativo = ?, imagem = ?
-                    WHERE id = ?
-                    """,
-                    (nome_categoria, descricao, ativo, imagem_base64, id)
-                )
-            else:
-                conn.execute(
-                    """
-                    UPDATE categoria
-                    SET nome = ?, descricao = ?, ativo = ?
-                    WHERE id = ?
-                    """,
-                    (nome_categoria, descricao, ativo, id)
-                )
+            conn.execute(
+                """
+                UPDATE categoria
+                SET nome = ?, descricao = ?, ativo = ?, imagem = ?
+                WHERE id = ?
+                """,
+                (nome, descricao, ativo, imagem_base64, id)
+            )
 
             conn.commit()
-            conn.close()
 
             flash("Categoria atualizada com sucesso!", "success")
             return redirect(url_for("listarCategoria"))
 
-        flash("Informe o nome da categoria.", "warning")
+        return render_template(
+            "admin/editar_categoria.html",
+            categoria=categoria
+        )
 
-    conn.close()
-
-    return render_template(
-        "admin/editar_categoria.html",
-        categoria=categoria
-    )
+    finally:
+        conn.close()
 
 
-@app.route("/excluir_categoria/<int:id>", methods=["GET", "POST"])
+# =========================================================
+# EXCLUIR CATEGORIA
+# =========================================================
+
+@app.route("/excluir_categoria/<int:id>", methods=["POST"])
 @administrador_logado
 def excluirCategoria(id):
     conn = conexao()
 
-    categoria = conn.execute(
-        "SELECT * FROM categoria WHERE id = ?",
-        (id,)
-    ).fetchone()
+    try:
+        categoria = conn.execute(
+            "SELECT id FROM categoria WHERE id = ?",
+            (id,)
+        ).fetchone()
 
-    if categoria is None:
-        conn.close()
-        flash("Categoria não encontrada.", "warning")
-        return redirect(url_for("listarCategoria"))
+        if categoria is None:
+            flash("Categoria não encontrada.", "warning")
+            return redirect(url_for("listarCategoria"))
 
-    if request.method == "POST":
+        # Verifica se existem produtos vinculados à categoria.
+        produtos = conn.execute(
+            "SELECT COUNT(*) FROM produto WHERE id_categoria = ?",
+            (id,)
+        ).fetchone()[0]
+
+        if produtos > 0:
+            flash(
+                "Não é possível excluir esta categoria, pois existem "
+                "produtos vinculados a ela. Exclua os produtos ou "
+                "altere a categoria deles antes de continuar.",
+                "warning"
+            )
+            return redirect(url_for("listarCategoria"))
+
         conn.execute(
             "DELETE FROM categoria WHERE id = ?",
             (id,)
         )
         conn.commit()
+
+        flash("Categoria excluída com sucesso!", "success")
+
+    finally:
         conn.close()
 
-        flash("Categoria excluída.", "success")
-        return redirect(url_for("listarCategoria"))
+    return redirect(url_for("listarCategoria"))
 
-    conn.close()
-
-    return render_template(
-        "admin/excluir_categoria.html",
-        categoria=categoria
-    )
 
 
 # =========================================================
 # LISTAGEM ADMINISTRATIVA DE PRODUTOS
 # =========================================================
 
+
+
 @app.route("/listar_produtos")
 @administrador_logado
 def listarProdutos():
+    por_pagina = 10
+
+    # Parâmetros de pesquisa e filtros
+    busca = request.args.get("busca", "").strip()
+    categoria_selecionada = request.args.get("categoria", "").strip()
+    status_selecionado = request.args.get("status", "").strip()
+
+    # Identifica a página solicitada
+    try:
+        pagina = int(request.args.get("pagina", 1))
+    except (TypeError, ValueError):
+        pagina = 1
+
+    if pagina < 1:
+        pagina = 1
+
     conn = conexao()
 
-    produtos = conn.execute(
-        """
-        SELECT
-            produto.*,
-            categoria.nome AS nome_categoria
-        FROM produto
-        LEFT JOIN categoria
-            ON produto.id_categoria = categoria.id
-        ORDER BY produto.nome
-        """
-    ).fetchall()
+    try:
+        # Lista categorias para o filtro
+        categorias = conn.execute(
+            """
+            SELECT id, nome
+            FROM categoria
+            ORDER BY nome
+            """
+        ).fetchall()
 
-    conn.close()
+        # Monta os filtros da consulta
+        condicoes = []
+        parametros = []
+
+        if busca:
+            condicoes.append("produto.nome LIKE ?")
+            parametros.append(f"%{busca}%")
+
+        if categoria_selecionada:
+            try:
+                categoria_id = int(categoria_selecionada)
+                condicoes.append("produto.id_categoria = ?")
+                parametros.append(categoria_id)
+            except ValueError:
+                categoria_selecionada = ""
+
+        if status_selecionado == "ativo":
+            condicoes.append("produto.ativo = 1")
+
+        elif status_selecionado == "inativo":
+            condicoes.append(
+                "(produto.ativo = 0 OR produto.ativo IS NULL)"
+            )
+
+        # Aplica os filtros à consulta
+        where_sql = ""
+        if condicoes:
+            where_sql = "WHERE " + " AND ".join(condicoes)
+
+        # Conta somente os produtos que correspondem aos filtros
+        total_produtos = conn.execute(
+            f"""
+            SELECT COUNT(*)
+            FROM produto
+            {where_sql}
+            """,
+            parametros
+        ).fetchone()[0]
+
+        # Calcula a quantidade de páginas
+        total_paginas = max(
+            1,
+            (total_produtos + por_pagina - 1) // por_pagina
+        )
+
+        # Impede solicitar uma página além da última
+        pagina = min(pagina, total_paginas)
+
+        offset = (pagina - 1) * por_pagina
+
+        # Busca os produtos da página atual
+        produtos = conn.execute(
+            f"""
+            SELECT
+                produto.*,
+                categoria.nome AS nome_categoria
+            FROM produto
+            LEFT JOIN categoria
+                ON produto.id_categoria = categoria.id
+            {where_sql}
+            ORDER BY produto.nome
+            LIMIT ? OFFSET ?
+            """,
+            parametros + [por_pagina, offset]
+        ).fetchall()
+
+    finally:
+        conn.close()
 
     return render_template(
         "admin/listar_produtos.html",
-        produtos=produtos
+        produtos=produtos,
+        pagina=pagina,
+        total_paginas=total_paginas,
+        total_produtos=total_produtos,
+        categorias=categorias,
+        busca=busca,
+        categoria_selecionada=categoria_selecionada,
+        status_selecionado=status_selecionado
     )
 
 
+
+
 # =========================================================
-# CATÁLOGO PÚBLICO
+# CATÁLOGO PÚBLICO - CATEGORIAS
 # =========================================================
 
 @app.route("/catalogo")
 def catalogoPublico():
     conn = conexao()
 
-    busca = request.args.get("busca", "").strip()
-    categoria_id = request.args.get("categoria", "").strip()
-
-    sql = """
-        SELECT
-            produto.*,
-            categoria.nome AS nome_categoria
-        FROM produto
-        LEFT JOIN categoria
-            ON produto.id_categoria = categoria.id
-        WHERE (
-            produto.ativo = 1
-            OR LOWER(CAST(produto.ativo AS TEXT)) = 'true'
-            OR LOWER(CAST(produto.ativo AS TEXT)) = 'on'
-        )
-    """
-
-    parametros = []
-
-    if busca:
-        sql += " AND produto.nome LIKE ?"
-        parametros.append(f"%{busca}%")
-
-    if categoria_id.isdigit():
-        sql += " AND produto.id_categoria = ?"
-        parametros.append(int(categoria_id))
-
-    sql += " ORDER BY produto.nome"
-
-    produtos = conn.execute(sql, parametros).fetchall()
-
-    print("BANCO UTILIZADO:", os.path.abspath("database.db"))
-    print("PRODUTOS ENCONTRADOS:", len(produtos), [p["nome"] for p in produtos])
     categorias = conn.execute(
         """
-        SELECT id, nome
+        SELECT id, nome, descricao, imagem
         FROM categoria
         WHERE (
             ativo = 1
-            OR LOWER(CAST(ativo AS TEXT)) = 'true'
-            OR LOWER(CAST(ativo AS TEXT)) = 'on'
+            OR LOWER(CAST(ativo AS TEXT)) IN ('true', 'on')
         )
         ORDER BY nome
         """
@@ -344,12 +475,59 @@ def catalogoPublico():
     conn.close()
 
     return render_template(
+        "categorias_publicas.html",
+        categorias=categorias
+    )
+
+
+# =========================================================
+# CATÁLOGO PÚBLICO - PRODUTOS DA CATEGORIA
+# =========================================================
+
+@app.route("/catalogo/categoria/<int:categoria_id>")
+def produtosDaCategoria(categoria_id):
+    conn = conexao()
+
+    categoria = conn.execute(
+        """
+        SELECT id, nome, descricao, imagem
+        FROM categoria
+        WHERE id = ?
+          AND (
+              ativo = 1
+              OR LOWER(CAST(ativo AS TEXT)) IN ('true', 'on')
+          )
+        """,
+        (categoria_id,)
+    ).fetchone()
+
+    if categoria is None:
+        conn.close()
+        flash("Categoria não encontrada ou inativa.", "warning")
+        return redirect(url_for("catalogoPublico"))
+
+    produtos = conn.execute(
+        """
+        SELECT id, nome, preco, imagem
+        FROM produto
+        WHERE id_categoria = ?
+          AND (
+              ativo = 1
+              OR LOWER(CAST(ativo AS TEXT)) IN ('true', 'on')
+          )
+        ORDER BY nome
+        """,
+        (categoria_id,)
+    ).fetchall()
+
+    conn.close()
+
+    return render_template(
         "catalogo.html",
         produtos=produtos,
-        categorias=categorias,
-        busca=busca,
-        categoria_selecionada=categoria_id
+        categoria=categoria
     )
+
 
 
 # =========================================================

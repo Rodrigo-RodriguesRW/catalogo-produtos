@@ -43,6 +43,25 @@
 
 
     <div class="card-body p-0">
+        
+    {% if total_categorias > 0 %}
+    <div class="d-flex flex-column flex-md-row
+            justify-content-between align-items-md-center
+            gap-2 p-3 border-bottom">
+
+        <span class="text-body-secondary small">
+            Exibindo {{ (pagina - 1) * 10 + 1 }}
+            a {{ [pagina * 10, total_categorias]|min }}
+            de {{ total_categorias }} categoria(s)
+        </span>
+
+        <span class="text-body-secondary small">
+            Página {{ pagina }} de {{ total_paginas }}
+        </span>
+
+    </div>
+    {% endif %}
+
 
         <div class="table-responsive">
 
@@ -170,19 +189,31 @@
                                 </a>
 
 
-                                <a
-                                    href="{{ url_for('excluirCategoria', id=i.id) }}"
-                                    class="btn btn-sm btn-danger"
-                                    aria-label="Excluir {{ i.nome }}"
-                                    title="Excluir">
+                              
+            <form
+                method="POST"
+                action="{{ url_for('excluirCategoria', id=i.id) }}"
+                onsubmit="return confirm('Deseja realmente excluir a categoria {{ i.nome }}?');"
+                class="d-inline">
 
-                                    <i class="bi bi-trash"></i>
+                <button
+                    type="submit"
+                    class="btn btn-sm btn-danger"
+                    aria-label="Excluir {{ i.nome }}"
+                    title="Excluir">
 
-                                    <span class="d-none d-lg-inline ms-1">
-                                        Excluir
-                                    </span>
+                    <i class="bi bi-trash"></i>
 
-                                </a>
+                    <span class="d-none d-lg-inline ms-1">
+                        Excluir
+                    </span>
+
+                </button>
+
+            </form>
+
+
+                                
 
                             </div>
 
@@ -237,6 +268,53 @@
             </table>
 
         </div>
+        
+{% if total_paginas > 1 %}
+<div class="d-flex flex-column flex-sm-row
+            justify-content-between align-items-center
+            gap-3 p-3 border-top">
+
+    <span class="text-body-secondary small">
+        Página {{ pagina }} de {{ total_paginas }}
+    </span>
+
+    <nav aria-label="Paginação das categorias">
+        <ul class="pagination pagination-sm mb-0">
+
+            <li class="page-item {% if pagina <= 1 %}disabled{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('listarCategoria', pagina=pagina-1) if pagina > 1 else '#' }}"
+                   {% if pagina <= 1 %}aria-disabled="true" tabindex="-1"{% endif %}>
+                    <i class="bi bi-chevron-left"></i>
+                    Anterior
+                </a>
+            </li>
+
+            {% for numero in range(1, total_paginas + 1) %}
+            <li class="page-item {% if numero == pagina %}active{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('listarCategoria', pagina=numero) }}"
+                   {% if numero == pagina %}aria-current="page"{% endif %}>
+                    {{ numero }}
+                </a>
+            </li>
+            {% endfor %}
+
+            <li class="page-item {% if pagina >= total_paginas %}disabled{% endif %}">
+                <a class="page-link"
+                   href="{{ url_for('listarCategoria', pagina=pagina+1) if pagina < total_paginas else '#' }}"
+                   {% if pagina >= total_paginas %}aria-disabled="true" tabindex="-1"{% endif %}>
+                    Próxima
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>
+{% endif %}
+
 
     </div>
 

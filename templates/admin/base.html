@@ -1,683 +1,517 @@
-<!doctype html>
 
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
-  <meta charset="utf-8" />
+    <meta charset="utf-8" />
+    <title>Catálogo de Produtos</title>
 
-  <title>Catálogo de Produtos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Configuração responsiva -->
+    <!-- Tema -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Informações do sistema -->
+    <meta name="description" content="Sistema de gerenciamento de categorias e produtos." />
+    <meta name="keywords" content="catálogo, produtos, categorias, gerenciamento, sistema web" />
 
-  <!-- Tema -->
+    <!-- Preload do AdminLTE -->
+    <link rel="preload"
+          href="{{ url_for('static', filename='css/dist/css/adminlte.css') }}"
+          as="style" />
 
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
+    <!-- Fonte -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
+          crossorigin="anonymous" />
 
-  <!-- Informações do sistema -->
+    <!-- OverlayScrollbars -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
+          crossorigin="anonymous" />
 
-<meta name="description"
- content="Sistema de gerenciamento de categorias e produtos." />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+          crossorigin="anonymous" />
 
-<meta name="keywords"
- content="catálogo, produtos, categorias, gerenciamento, sistema web" />
+    <!-- AdminLTE -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/dist/css/adminlte.css') }}" />
 
-  <!-- Preload do AdminLTE -->
-
-  <link rel="preload"
-    href="{{ url_for('static', filename='css/dist/css/adminlte.css') }}"
-    as="style" />
-
-  <!-- Fonte -->
-
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
-    crossorigin="anonymous" />
-
-  <!-- OverlayScrollbars -->
-
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css"
-    crossorigin="anonymous" />
-
-  <!-- Bootstrap Icons -->
-
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
-    crossorigin="anonymous" />
-
-  <!-- AdminLTE -->
-
-  <link rel="stylesheet"
-    href="{{ url_for('static', filename='css/dist/css/adminlte.css') }}" />
-
-  <!-- Bootstrap -->
-
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    crossorigin="anonymous">
-
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous" />
 </head>
 
 <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
 
-  <!-- App Wrapper -->
+<div class="app-wrapper">
+
+    <!-- HEADER -->
+    <nav class="app-header navbar navbar-expand bg-body">
+
+        <div class="container-fluid">
+
+            <!-- Botão do menu lateral -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link"
+                       data-lte-toggle="sidebar"
+                       href="#"
+                       role="button"
+                       aria-label="Abrir ou fechar menu">
+                        <i class="bi bi-list"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Menu do lado direito -->
+            <ul class="navbar-nav ms-auto">
+
+                <!-- Tema -->
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link"
+                       href="#"
+                       id="bd-theme"
+                       aria-label="Alterar tema"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+
+                        <i class="bi bi-sun-fill"
+                           data-lte-theme-icon="light"></i>
+
+                        <i class="bi bi-moon-fill d-none"
+                           data-lte-theme-icon="dark"></i>
+
+                        <i class="bi bi-circle-half d-none"
+                           data-lte-theme-icon="auto"></i>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end"
+                        aria-labelledby="bd-theme">
+
+                        <li>
+                            <button type="button"
+                                    class="dropdown-item d-flex align-items-center"
+                                    data-bs-theme-value="light"
+                                    aria-pressed="false">
+                                <i class="bi bi-sun-fill me-2"></i>
+                                Claro
+                                <i class="bi bi-check-lg ms-auto d-none"></i>
+                            </button>
+                        </li>
+
+                        <li>
+                            <button type="button"
+                                    class="dropdown-item d-flex align-items-center"
+                                    data-bs-theme-value="dark"
+                                    aria-pressed="false">
+                                <i class="bi bi-moon-fill me-2"></i>
+                                Escuro
+                                <i class="bi bi-check-lg ms-auto d-none"></i>
+                            </button>
+                        </li>
+
+                        <li>
+                            <button type="button"
+                                    class="dropdown-item d-flex align-items-center"
+                                    data-bs-theme-value="auto"
+                                    aria-pressed="true">
+                                <i class="bi bi-circle-half me-2"></i>
+                                Automático
+                                <i class="bi bi-check-lg ms-auto d-none"></i>
+                            </button>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- Usuário -->
+                <li class="nav-item dropdown user-menu">
+
+                    <a href="#"
+                       class="nav-link dropdown-toggle"
+                       data-bs-toggle="dropdown"
+                       aria-label="Menu do usuário">
+
+                        <i class="bi bi-person-circle fs-5"></i>
+
+                        <span class="d-none d-md-inline ms-1">
+                            {{ session.get('usuario_nome', 'Administrador') }}
+                        </span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li class="user-header text-bg-primary text-center">
+
+                            <i class="bi bi-person-circle"
+                               style="font-size: 70px;"></i>
 
-  <div class="app-wrapper">
+                            <p class="mb-0 mt-2">
+                                {{ session.get('usuario_nome', 'Administrador') }}
+                            </p>
 
+                            <small>Catálogo de Produtos</small>
 
-<!-- =====================================================
-     HEADER
-====================================================== -->
+                        </li>
 
-<nav class="app-header navbar navbar-expand bg-body">
+                        <li class="user-footer d-flex justify-content-between align-items-center p-3">
 
-  <div class="container-fluid">
+                            <span class="text-muted">
+                                Sistema de gerenciamento
+                            </span>
 
-    <!-- Botão do menu lateral -->
-    <ul class="navbar-nav">
+                            <form method="POST" action="{{ url_for('logout') }}">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-box-arrow-right me-1"></i>
+                                    Sair
+                                </button>
+                            </form>
 
-      <li class="nav-item">
+                        </li>
 
-        <a class="nav-link"
-          data-lte-toggle="sidebar"
-          href="#"
-          role="button"
-          aria-label="Abrir ou fechar menu">
+                    </ul>
+                </li>
 
-          <i class="bi bi-list"></i>
-
-        </a>
-
-      </li>
-
-    </ul>
-
-
-    <!-- Menu do lado direito -->
-    <ul class="navbar-nav ms-auto">
-
-
-      <!-- Tema -->
-      <li class="nav-item dropdown">
-
-        <a class="nav-link"
-          href="#"
-          id="bd-theme"
-          aria-label="Alterar tema"
-          data-bs-toggle="dropdown"
-          aria-expanded="false">
-
-          <i class="bi bi-sun-fill"
-            data-lte-theme-icon="light"></i>
-
-          <i class="bi bi-moon-fill d-none"
-            data-lte-theme-icon="dark"></i>
-
-          <i class="bi bi-circle-half d-none"
-            data-lte-theme-icon="auto"></i>
-
-        </a>
-
-
-        <ul class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="bd-theme">
-
-          <li>
-
-            <button
-              type="button"
-              class="dropdown-item d-flex align-items-center"
-              data-bs-theme-value="light"
-              aria-pressed="false">
-
-              <i class="bi bi-sun-fill me-2"></i>
-
-              Claro
-
-              <i class="bi bi-check-lg ms-auto d-none"></i>
-
-            </button>
-
-          </li>
-
-
-          <li>
-
-            <button
-              type="button"
-              class="dropdown-item d-flex align-items-center"
-              data-bs-theme-value="dark"
-              aria-pressed="false">
-
-              <i class="bi bi-moon-fill me-2"></i>
-
-              Escuro
-
-              <i class="bi bi-check-lg ms-auto d-none"></i>
-
-            </button>
-
-          </li>
-
-
-          <li>
-
-            <button
-              type="button"
-              class="dropdown-item d-flex align-items-center"
-              data-bs-theme-value="auto"
-              aria-pressed="true">
-
-              <i class="bi bi-circle-half me-2"></i>
-
-              Automático
-
-              <i class="bi bi-check-lg ms-auto d-none"></i>
-
-            </button>
-
-          </li>
-
-        </ul>
-
-      </li>
-
-
-      <!-- Usuário -->
-      <li class="nav-item dropdown user-menu">
-
-        <a href="#"
-          class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-label="Menu do usuário">
-
-          <i class="bi bi-person-circle fs-5"></i>
-
-          <span class="d-none d-md-inline ms-1">
-              {{ session.get('usuario_nome', 'Administrador') }}
-          </span>
-
-        </a>
-
-
-        <ul class="dropdown-menu dropdown-menu-end">
-
-          <li class="user-header text-bg-primary text-center">
-
-            <i class="bi bi-person-circle"
-              style="font-size: 70px;"></i>
-
-            <p class="mb-0 mt-2">
-                {{ session.get('usuario_nome', 'Administrador') }}
-            </p>
-
-                     <li class="user-header text-bg-primary text-center">
-
-            <i class="bi bi-person-circle"
-              style="font-size: 70px;"></i>
-
-            <p class="mb-0 mt-2">
-              {{ session.get('usuario_nome', 'Administrador') }}
-            </p>
-
-            <small>
-              Catálogo de Produtos
-            </small>
-
-          </li>
-
-          <li class="user-footer d-flex justify-content-between align-items-center p-3">
-
-            <span class="text-muted">
-              Sistema de gerenciamento
-            </span>
-
-            <form method="POST" action="{{ url_for('logout') }}">
-              <button type="submit" class="btn btn-danger btn-sm">
-                <i class="bi bi-box-arrow-right me-1"></i>
-                Sair
-              </button>
-            </form>
-
-          </li>
-
-        </ul>
-
-      </li>
-
-    </ul>
-
-  </div>
-
-</nav>
-
-
-<!-- =====================================================
-     SIDEBAR
-====================================================== -->
-
-<aside
-  class="app-sidebar bg-body-secondary shadow"
-  data-bs-theme="dark">
-
-
-  <!-- Marca -->
-  <div class="sidebar-brand">
-
-    <a href="{{ url_for('dashboard') }}"
-      class="brand-link">
-
-      <i class="bi bi-box-seam-fill brand-image"></i>
-
-      <span class="brand-text fw-light">
-        Catálogo de Produtos
-      </span>
-
-    </a>
-
-  </div>
-
-
-  <!-- Menu -->
-  <div class="sidebar-wrapper">
-
-    <nav class="mt-2">
-
-      <ul
-        class="nav sidebar-menu flex-column"
-        data-lte-toggle="treeview"
-        role="navigation"
-        aria-label="Menu principal"
-        data-accordion="false">
-
-
-        <!-- Cadastros -->
-        <li class="nav-item">
-
-          <a href="#"
-            class="nav-link">
-
-            <i class="nav-icon bi bi-box-seam-fill"></i>
-
-            <p>
-
-              Cadastros
-
-              <i class="nav-arrow bi bi-chevron-right"></i>
-
-            </p>
-
-          </a>
-
-
-          <ul class="nav nav-treeview">
-
-
-            <!-- Categorias -->
-            <li class="nav-item">
-
-              <a
-                href="{{ url_for('listarCategoria') }}"
-                class="nav-link">
-
-                <i class="nav-icon bi bi-tags"></i>
-
-                <p>
-                  Categorias
-                </p>
-
-              </a>
-
-            </li>
-
-
-            <!-- Produtos -->
-            <li class="nav-item">
-
-              <a
-                href="{{ url_for('listarProdutos') }}"
-                class="nav-link">
-
-                <i class="nav-icon bi bi-box"></i>
-
-                <p>
-                  Produtos
-                </p>
-
-              </a>
-
-            </li>
-
-
-          </ul>
-
-        </li>
-
-      </ul>
-
+            </ul>
+        </div>
     </nav>
 
-  </div>
+    <!-- SIDEBAR -->
+    <aside class="app-sidebar bg-body-secondary shadow"
+           data-bs-theme="dark">
 
-</aside>
+        <!-- Marca -->
+        <div class="sidebar-brand">
 
+            <a href="{{ url_for('dashboard') }}"
+               class="brand-link">
 
-<!-- =====================================================
-     CONTEÚDO PRINCIPAL
-====================================================== -->
+                <i class="bi bi-box-seam-fill brand-image"></i>
 
-<main class="app-main">
+                <span class="brand-text fw-light">
+                    Catálogo de Produtos
+                </span>
 
-  <div class="app-content">
+            </a>
+        </div>
 
-    <div class="container-fluid">
+        <!-- Menu lateral -->
+        <div class="sidebar-wrapper">
 
-      {% block content %}
-      {% endblock %}
+            <nav class="mt-2">
 
-    </div>
+                <!-- Voltar à tela inicial -->
+                <ul class="nav sidebar-menu flex-column"
+                    role="navigation"
+                    aria-label="Navegação inicial">
 
-  </div>
+                    <li class="nav-item">
 
-</main>
+                        <a href="{{ url_for('index') }}"
+                           class="nav-link">
 
+                            <i class="nav-icon bi bi-house-door"></i>
 
-<!-- =====================================================
-     FOOTER
-====================================================== -->
+                            <p>Voltar à tela inicial</p>
 
-<footer class="app-footer">
+                        </a>
 
-  <div class="float-end d-none d-sm-inline">
+                    </li>
 
-    Catálogo de Produtos
+                </ul>
 
-  </div>
+                <!-- Menu principal -->
+                <ul class="nav sidebar-menu flex-column"
+                    data-lte-toggle="treeview"
+                    role="navigation"
+                    aria-label="Menu principal"
+                    data-accordion="false">
 
+                    <!-- Cadastros -->
+                    <li class="nav-item">
 
-  <strong>
+                        <a href="#"
+                           class="nav-link">
 
-    Copyright &copy; 2026
+                            <i class="nav-icon bi bi-box-seam-fill"></i>
 
-  </strong>
+                            <p>
+                                Cadastros
+                                <i class="nav-arrow bi bi-chevron-right"></i>
+                            </p>
 
-  <span class="ms-1">
+                        </a>
 
-    Todos os direitos reservados.
+                        <ul class="nav nav-treeview">
 
-  </span>
+                            <!-- Categorias -->
+                            <li class="nav-item">
 
-</footer>
+                                <a href="{{ url_for('listarCategoria') }}"
+                                   class="nav-link">
 
+                                    <i class="nav-icon bi bi-tags"></i>
 
-  </div>
+                                    <p>Categorias</p>
 
-  <!-- =====================================================
-       SCRIPTS
-  ====================================================== -->
+                                </a>
 
-  <!-- OverlayScrollbars -->
+                            </li>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
-    crossorigin="anonymous">
-  </script>
+                            <!-- Produtos -->
+                            <li class="nav-item">
 
-  <!-- Popper -->
+                                <a href="{{ url_for('listarProdutos') }}"
+                                   class="nav-link">
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-    crossorigin="anonymous">
-  </script>
+                                    <i class="nav-icon bi bi-box"></i>
 
-  <!-- Bootstrap -->
+                                    <p>Produtos</p>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    crossorigin="anonymous">
-  </script>
+                                </a>
 
-  <!-- AdminLTE -->
+                            </li>
 
-  <script
-    src="{{ url_for('static', filename='css/dist/js/adminlte.js') }}">
-  </script>
+                        </ul>
+                    </li>
 
-  <!-- =====================================================
-       OVERLAY SCROLLBARS
-  ====================================================== -->
+                </ul>
+            </nav>
+        </div>
+    </aside>
 
-  <script>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="app-main">
 
+        <div class="app-content">
+
+            <div class="container-fluid">
+
+                <!-- Mensagens do sistema -->
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+
+                    {% if mensagens %}
+
+                        {% for categoria, mensagem in mensagens %}
+
+                            <div class="alert alert-{{ categoria }} alert-dismissible fade show mt-3"
+                                 role="alert">
+
+                                {{ mensagem }}
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="alert"
+                                        aria-label="Fechar">
+                                </button>
+
+                            </div>
+
+                        {% endfor %}
+
+                    {% endif %}
+
+                {% endwith %}
+
+                {% block content %}
+                {% endblock %}
+
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+
+        <div class="float-end d-none d-sm-inline">
+            Catálogo de Produtos
+        </div>
+
+        <strong>Copyright &copy; 2026</strong>
+
+        <span class="ms-1">
+            Todos os direitos reservados.
+        </span>
+
+    </footer>
+
+</div>
+
+<!-- SCRIPTS -->
+
+<!-- OverlayScrollbars -->
+<script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
+        crossorigin="anonymous"></script>
+
+<!-- Popper -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        crossorigin="anonymous"></script>
+
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+
+<!-- AdminLTE -->
+<script src="{{ url_for('static', filename='css/dist/js/adminlte.js') }}"></script>
+
+<!-- OVERLAY SCROLLBARS -->
+<script>
     const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';
 
     const Default = {
-      scrollbarTheme: 'os-theme-light',
-      scrollbarAutoHide: 'leave',
-      scrollbarClickScroll: true,
+        scrollbarTheme: 'os-theme-light',
+        scrollbarAutoHide: 'leave',
+        scrollbarClickScroll: true,
     };
-
 
     document.addEventListener('DOMContentLoaded', function () {
 
-      const sidebarWrapper =
-        document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
+        const sidebarWrapper =
+            document.querySelector(SELECTOR_SIDEBAR_WRAPPER);
 
+        const isMobile = window.innerWidth <= 992;
 
-      const isMobile =
-        window.innerWidth <= 992;
-
-
-      if (
-        sidebarWrapper &&
-        OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
-        !isMobile
-      ) {
-
-        OverlayScrollbarsGlobal.OverlayScrollbars(
-          sidebarWrapper,
-          {
-            scrollbars: {
-              theme: Default.scrollbarTheme,
-              autoHide: Default.scrollbarAutoHide,
-              clickScroll: Default.scrollbarClickScroll,
-            },
-          }
-        );
-
-      }
-
+        if (
+            sidebarWrapper &&
+            window.OverlayScrollbarsGlobal?.OverlayScrollbars !== undefined &&
+            !isMobile
+        ) {
+            window.OverlayScrollbarsGlobal.OverlayScrollbars(
+                sidebarWrapper,
+                {
+                    scrollbars: {
+                        theme: Default.scrollbarTheme,
+                        autoHide: Default.scrollbarAutoHide,
+                        clickScroll: Default.scrollbarClickScroll,
+                    },
+                }
+            );
+        }
     });
+</script>
 
-  </script>
-
-  <!-- =====================================================
-       TEMA CLARO / ESCURO
-  ====================================================== -->
-
-  <script>
-
+<!-- TEMA CLARO / ESCURO -->
+<script>
     (() => {
 
-      'use strict';
+        'use strict';
 
+        const STORAGE_KEY = 'lte-theme';
 
-      const STORAGE_KEY = 'lte-theme';
+        const getStoredTheme = () =>
+            localStorage.getItem(STORAGE_KEY);
 
+        const setStoredTheme = (theme) =>
+            localStorage.setItem(STORAGE_KEY, theme);
 
-      const getStoredTheme = () =>
-        localStorage.getItem(STORAGE_KEY);
+        const prefersDark = () =>
+            globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
 
+        const getPreferredTheme = () => {
 
-      const setStoredTheme = (theme) =>
-        localStorage.setItem(STORAGE_KEY, theme);
+            const stored = getStoredTheme();
 
-
-      const prefersDark = () =>
-        globalThis.matchMedia(
-          '(prefers-color-scheme: dark)'
-        ).matches;
-
-
-      const getPreferredTheme = () => {
-
-        const stored = getStoredTheme();
-
-        if (stored) {
-          return stored;
-        }
-
-        return prefersDark()
-          ? 'dark'
-          : 'light';
-
-      };
-
-
-      const setTheme = (theme) => {
-
-        const resolved =
-          theme === 'auto'
-            ? (prefersDark() ? 'dark' : 'light')
-            : theme;
-
-
-        document.documentElement.setAttribute(
-          'data-bs-theme',
-          resolved
-        );
-
-      };
-
-
-      setTheme(getPreferredTheme());
-
-
-      const showActiveTheme = (theme) => {
-
-        document
-          .querySelectorAll('[data-bs-theme-value]')
-          .forEach((element) => {
-
-            element.classList.remove('active');
-
-            element.setAttribute(
-              'aria-pressed',
-              'false'
-            );
-
-
-            const check =
-              element.querySelector('.bi-check-lg');
-
-
-            if (check) {
-              check.classList.add('d-none');
+            if (stored) {
+                return stored;
             }
 
-          });
+            return prefersDark() ? 'dark' : 'light';
+        };
 
+        const setTheme = (theme) => {
 
-        const active =
-          document.querySelector(
-            `[data-bs-theme-value="${theme}"]`
-          );
+            const resolved =
+                theme === 'auto'
+                    ? (prefersDark() ? 'dark' : 'light')
+                    : theme;
 
+            document.documentElement.setAttribute(
+                'data-bs-theme',
+                resolved
+            );
+        };
 
-        if (active) {
+        setTheme(getPreferredTheme());
 
-          active.classList.add('active');
+        const showActiveTheme = (theme) => {
 
-          active.setAttribute(
-            'aria-pressed',
-            'true'
-          );
+            document.querySelectorAll('[data-bs-theme-value]')
+                .forEach((element) => {
 
+                    element.classList.remove('active');
+                    element.setAttribute('aria-pressed', 'false');
 
-          const check =
-            active.querySelector('.bi-check-lg');
+                    const check = element.querySelector('.bi-check-lg');
 
+                    if (check) {
+                        check.classList.add('d-none');
+                    }
+                });
 
-          if (check) {
-            check.classList.remove('d-none');
-          }
-
-        }
-
-
-        document
-          .querySelectorAll('[data-lte-theme-icon]')
-          .forEach((icon) => {
-
-            icon.classList.toggle(
-              'd-none',
-              icon.dataset.lteThemeIcon !== theme
+            const active = document.querySelector(
+                `[data-bs-theme-value="${theme}"]`
             );
 
-          });
+            if (active) {
 
-      };
+                active.classList.add('active');
+                active.setAttribute('aria-pressed', 'true');
 
+                const check = active.querySelector('.bi-check-lg');
 
-      globalThis
-        .matchMedia('(prefers-color-scheme: dark)')
-        .addEventListener('change', () => {
-
-          const stored = getStoredTheme();
-
-          if (!stored || stored === 'auto') {
-            setTheme(getPreferredTheme());
-          }
-
-        });
-
-
-      document.addEventListener(
-        'DOMContentLoaded',
-        () => {
-
-          showActiveTheme(
-            getPreferredTheme()
-          );
-
-
-          document
-            .querySelectorAll('[data-bs-theme-value]')
-            .forEach((toggle) => {
-
-              toggle.addEventListener(
-                'click',
-                () => {
-
-                  const theme =
-                    toggle.getAttribute(
-                      'data-bs-theme-value'
-                    );
-
-
-                  setStoredTheme(theme);
-
-                  setTheme(theme);
-
-                  showActiveTheme(theme);
-
+                if (check) {
+                    check.classList.remove('d-none');
                 }
-              );
+            }
 
+            document.querySelectorAll('[data-lte-theme-icon]')
+                .forEach((icon) => {
+
+                    icon.classList.toggle(
+                        'd-none',
+                        icon.dataset.lteThemeIcon !== theme
+                    );
+                });
+        };
+
+        globalThis.matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', () => {
+
+                const stored = getStoredTheme();
+
+                if (!stored || stored === 'auto') {
+                    setTheme(getPreferredTheme());
+                }
             });
 
-        }
-      );
+        document.addEventListener('DOMContentLoaded', () => {
+
+            showActiveTheme(getPreferredTheme());
+
+            document.querySelectorAll('[data-bs-theme-value]')
+                .forEach((toggle) => {
+
+                    toggle.addEventListener('click', () => {
+
+                        const theme =
+                            toggle.getAttribute('data-bs-theme-value');
+
+                        setStoredTheme(theme);
+                        setTheme(theme);
+                        showActiveTheme(theme);
+                    });
+                });
+        });
 
     })();
-
-  </script>
+</script>
 
 </body>
-
 </html>
